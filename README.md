@@ -4,6 +4,11 @@
 handwriting, solves or explains the problem with a tool loop (a language model plus a real
 calculator and computer-algebra engine), and writes the working back in your own handwriting.
 
+<p align="center">
+  <img src="docs/assets/slate-intro.gif" width="880"
+       alt="Motion graphic: the handwritten equation 2x + 3 = 11 is read, solved, and the answer x = 4 is written in blue ink">
+</p>
+
 This repository is the **open-source edition** of Slate. It is the same web app, API server, Android
 shell and desktop shell that power the hosted product, with the commercial parts removed (see
 [What this edition leaves out](#what-this-edition-leaves-out)).
