@@ -77,7 +77,10 @@ test('over HTTP: a link opens without signing in, and making one needs sign-in',
     assert.equal(make.status, 401);
     assert.equal((await fetch(`${base}/api/shares`)).status, 401);
   } finally {
-    server.close();
+    // fetch keeps its connections alive; close them first so `close` finishes now, not at exit,
+    // where an unclosed handle races process teardown (a libuv assertion on Windows).
+    server.closeAllConnections();
+    await new Promise<void>((resolve) => server.close(() => resolve()));
     setShareStore(null);
   }
 });

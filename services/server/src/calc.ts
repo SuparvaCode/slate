@@ -61,15 +61,28 @@ class CalcWorker {
     this.worker = new Worker(WORKER_URL);
     this.worker.unref();
     this.ready = new Promise((resolve, reject) => {
-      const t = setTimeout(() => reject(new Error('worker start timeout')), 60_000);
+      // Settle once: a worker that exits before its first message must reject `ready` at once, not
+      // leave the start timer to fire 60 s later and hold a short-lived process open until then.
+      let settled = false;
+      let startTimer: ReturnType<typeof setTimeout> | undefined;
+      const settle = (err?: Error): void => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(startTimer);
+        if (err) reject(err);
+        else resolve();
+      };
+      startTimer = setTimeout(() => settle(new Error('worker start timeout')), 60_000);
+      startTimer.unref();
       this.worker.once('message', () => {
-        clearTimeout(t);
-        resolve();
+        settle();
         this.worker.on('message', (m: { id: number; out: CalcOut }) => {
           this.pending.get(m.id)?.(m.out);
           this.pending.delete(m.id);
         });
       });
+      this.worker.once('error', (e) => settle(e instanceof Error ? e : new Error(String(e))));
+      this.worker.once('exit', (code) => settle(new Error(`the calculator stopped (exit ${code})`)));
     });
     this.ready.catch(() => {});
     this.worker.on('error', () => this.failAll());
@@ -106,6 +119,8 @@ const g = (n: number): string => String(Number(n.toPrecision(6)));
 
 export class Calculator {
   private idle: CalcWorker[] = [];
+  /** Every worker this calculator started, including ones checked out right now. */
+  private live = new Set<CalcWorker>();
   private waiters: ((w: CalcWorker) => void)[] = [];
   private started = false;
   private size: number;
@@ -114,10 +129,23 @@ export class Calculator {
     this.size = size;
   }
 
+  private spawn(): CalcWorker {
+    const w = new CalcWorker();
+    this.live.add(w);
+    return w;
+  }
+
+  /** Replaces a stuck or stopped worker, so close() still knows about the new one. */
+  private replace(dead: CalcWorker): CalcWorker {
+    this.live.delete(dead);
+    dead.kill();
+    return this.spawn();
+  }
+
   private ensure(): void {
     if (this.started) return;
     this.started = true;
-    for (let i = 0; i < this.size; i++) this.idle.push(new CalcWorker());
+    for (let i = 0; i < this.size; i++) this.idle.push(this.spawn());
   }
 
   private acquire(): Promise<CalcWorker> {
@@ -163,14 +191,12 @@ export class Calculator {
       try {
         await worker.ready; // the first use pays for loading the CAS; that is not timed
       } catch {
-        worker.kill();
-        worker = new CalcWorker();
+        worker = this.replace(worker);
         return { error: 'WorkerError: the calculator could not start.' };
       }
       const out = await worker.call({ op, args: clean }, timeoutS);
       if (out === 'timeout') {
-        worker.kill();
-        worker = new CalcWorker();
+        worker = this.replace(worker);
         return { error: `Stopped after ${g(timeoutS)}s without finishing. Try a simpler form, a substitution, or op 'numeric'.` };
       }
       return out;
@@ -179,9 +205,10 @@ export class Calculator {
     }
   }
 
-  /** Stops every worker (tests and shutdown). */
+  /** Stops every worker (tests and shutdown), including one still checked out. */
   close(): void {
-    for (const w of this.idle) w.kill();
+    for (const w of this.live) w.kill();
+    this.live.clear();
     this.idle = [];
     this.started = false;
   }
