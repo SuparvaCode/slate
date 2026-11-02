@@ -1,0 +1,468 @@
+/* ---------- Terms and Privacy: the reading dialog and the public page ---------- */
+
+.lg-scrim {
+  --lg-panel: var(--panel-solid);
+  --lg-text: var(--text);
+  --lg-muted: var(--muted);
+  --lg-faint: var(--faint);
+  --lg-link: var(--accent);
+  --lg-border: var(--border);
+  --lg-hover: var(--hover);
+  --lg-press: var(--press);
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: grid;
+  place-items: center;
+  padding:
+    max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: rgba(0, 0, 0, 0.42);
+  animation: lg-fade 0.22s ease both;
+}
+
+.lg-scrim.closing {
+  animation: lg-fade-out 0.16s ease both;
+}
+
+/* On the sign-in screen, which is dark whatever the app theme. */
+.lg-scrim.lg-dark {
+  --lg-panel: #18202b;
+  --lg-text: #eef2f6;
+  --lg-muted: #9aa7b4;
+  --lg-faint: #7d8b99;
+  --lg-link: #6cb4ff;
+  --lg-border: rgba(255, 255, 255, 0.11);
+  --lg-hover: rgba(255, 255, 255, 0.08);
+  --lg-press: rgba(255, 255, 255, 0.14);
+  background: rgba(8, 11, 16, 0.62);
+}
+
+.lg-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(720px, 100%);
+  height: min(86dvh, 780px);
+  max-height: 86dvh;
+  background: var(--lg-panel);
+  color: var(--lg-text);
+  border: 0.5px solid var(--lg-border);
+  border-radius: 22px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.34), 0 2px 8px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+  animation: lg-pop 0.34s var(--spring) both;
+}
+
+.lg-scrim.closing .lg-panel {
+  animation: lg-pop-out 0.18s ease-in both;
+}
+
+@keyframes lg-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes lg-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes lg-pop {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.97);
+  }
+}
+
+@keyframes lg-pop-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0) scale(0.985);
+  }
+}
+
+.lg-head {
+  flex: none;
+  padding: 22px 26px 0;
+  border-bottom: 0.5px solid var(--lg-border);
+}
+
+.lg-head-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.lg-head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.lg-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+.lg-updated {
+  margin: 5px 0 0;
+  font-size: 0.78rem;
+  color: var(--lg-muted);
+}
+
+.lg-close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-top: 2px;
+  border-radius: 50%;
+  background: var(--lg-hover);
+  color: var(--lg-muted);
+  transition: background-color 0.15s ease;
+}
+
+.lg-close:hover {
+  background: var(--lg-press);
+  color: var(--lg-text);
+}
+
+.lg-close:focus-visible {
+  outline: 2px solid var(--lg-link);
+  outline-offset: 2px;
+}
+
+.lg-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin: 16px 0 0;
+  padding: 2px;
+  border-radius: 10px 10px 0 0;
+  background: var(--lg-hover);
+}
+
+.lg-tabs button {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--lg-muted);
+  white-space: nowrap;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.lg-tabs button.on {
+  background: var(--lg-panel);
+  color: var(--lg-text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.16);
+}
+
+.lg-scrim.lg-dark .lg-tabs button.on {
+  background: #263140;
+}
+
+.lg-tabs button:focus-visible {
+  outline: 2px solid var(--lg-link);
+  outline-offset: 1px;
+}
+
+/* ---------- Document body ---------- */
+
+.lg-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 6px 26px 30px;
+  font-size: 0.94rem;
+  line-height: 1.64;
+  overflow-wrap: break-word;
+  -webkit-text-size-adjust: 100%;
+}
+
+.lg-body p {
+  margin: 0.75em 0;
+}
+
+.lg-body .lg-lead {
+  margin-top: 1.1em;
+  font-size: 1.01em;
+  line-height: 1.6;
+  color: var(--lg-text);
+}
+
+.lg-body a {
+  color: var(--lg-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+.lg-body a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.lg-section {
+  margin-top: 1.7em;
+}
+
+.lg-section h2 {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+.lg-section h3 {
+  margin: 1.25em 0 0;
+  font-size: 0.93rem;
+  font-weight: 600;
+}
+
+.lg-section ul {
+  margin: 0.6em 0;
+  padding-left: 1.25em;
+}
+
+.lg-section li {
+  margin: 0.45em 0;
+}
+
+.lg-section li::marker {
+  color: var(--lg-muted);
+}
+
+.lg-body strong {
+  font-weight: 620;
+}
+
+@media (max-width: 640px) {
+  .lg-scrim {
+    place-items: stretch;
+    padding: 0;
+  }
+  .lg-panel {
+    width: 100%;
+    height: 100dvh;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    padding-top: env(safe-area-inset-top);
+    animation: lg-sheet 0.34s var(--ease) both;
+  }
+  .lg-scrim.closing .lg-panel {
+    animation: lg-sheet-out 0.18s ease-in both;
+  }
+  .lg-head {
+    padding: 16px 18px 0;
+  }
+  .lg-title {
+    font-size: 1.15rem;
+  }
+  .lg-tabs {
+    margin-top: 12px;
+  }
+  .lg-tabs button {
+    height: 38px;
+    font-size: 0.85rem;
+  }
+  .lg-body {
+    padding: 6px 18px calc(28px + env(safe-area-inset-bottom));
+    font-size: 0.96rem;
+  }
+  .lg-section {
+    margin-top: 1.5em;
+  }
+}
+
+@keyframes lg-sheet {
+  from {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+@keyframes lg-sheet-out {
+  to {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+/* ---------- Public page at /terms and /privacy ---------- */
+
+.lg-page {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+.lg-page-head {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: max(14px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 12px
+    max(20px, env(safe-area-inset-left));
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(180%);
+  border-bottom: 0.5px solid var(--border);
+}
+
+.lg-page-home {
+  display: inline-flex;
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.lg-page-home:focus-visible,
+.lg-page-tabs a:focus-visible,
+.lg-page-back a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.lg-page-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--hover);
+}
+
+.lg-page-tabs a {
+  padding: 7px 12px;
+  border-radius: 7px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.lg-page-tabs a[aria-current='page'] {
+  background: var(--panel-solid);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+}
+
+[data-theme='dark'] .lg-page-tabs a[aria-current='page'] {
+  background: #48484a;
+}
+
+.lg-page-main {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 28px max(20px, env(safe-area-inset-right)) calc(56px + env(safe-area-inset-bottom))
+    max(20px, env(safe-area-inset-left));
+}
+
+.lg-page-doc {
+  background: var(--panel-solid);
+  border: 0.5px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 34px 38px 30px;
+}
+
+.lg-page-doc h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.lg-page-updated {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.lg-body-page {
+  overflow: visible;
+  padding: 6px 0 0;
+  font-size: 0.95rem;
+}
+
+.lg-page-back {
+  margin: 22px 0 0;
+  font-size: 0.9rem;
+}
+
+.lg-page-back a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.lg-page-back a:hover {
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .lg-page-main {
+    padding: 16px max(12px, env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+  }
+  .lg-page-doc {
+    padding: 22px 18px 20px;
+    border-radius: 14px;
+  }
+  .lg-page-doc h1 {
+    font-size: 1.35rem;
+  }
+  .lg-page-head {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-scrim,
+  .lg-scrim.closing,
+  .lg-panel,
+  .lg-scrim.closing .lg-panel {
+    animation: none;
+  }
+}
+
+@media print {
+  .lg-page-head,
+  .lg-page-back {
+    display: none;
+  }
+  .lg-page {
+    position: static;
+    overflow: visible;
+    background: #fff;
+    color: #000;
+  }
+  .lg-page-main {
+    max-width: none;
+    padding: 0;
+  }
+  .lg-page-doc {
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+  .lg-body a {
+    color: inherit;
+  }
+}

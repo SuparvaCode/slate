@@ -1,0 +1,320 @@
+/* ---------- Typeset answers (KaTeX on the board) ---------- */
+
+.tnote {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35em;
+  white-space: nowrap;
+  line-height: 1.25;
+  font-family: var(--font);
+  pointer-events: none;
+  user-select: none;
+}
+
+.tnote.fresh {
+  animation: tnote-in 0.55s var(--ease) 0.5s both;
+}
+
+@keyframes tnote-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.tnote .katex {
+  font-size: 1.12em;
+}
+
+.tline.boxed {
+  padding: 0.18em 0.5em;
+  border: 0.09em solid currentColor;
+  border-radius: 0.3em;
+}
+
+/* ---------- "Read as" chip ---------- */
+
+.chip {
+  position: absolute;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 6px 8px 6px 12px;
+  background: var(--panel);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  backdrop-filter: saturate(180%) blur(24px);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  font-size: 13px;
+  animation: panel-in 0.3s var(--ease) both;
+}
+
+.chip.unsure {
+  border-color: color-mix(in srgb, #ff9500 55%, transparent);
+}
+
+.chip-label {
+  flex: none;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.chip.unsure .chip-label {
+  color: #c93400;
+}
+
+[data-theme="dark"] .chip.unsure .chip-label {
+  color: #ff9f0a;
+}
+
+.chip-read {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+.chip-alt {
+  flex: none;
+  max-width: 220px;
+  overflow: hidden;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: var(--hover);
+  font-size: 14px;
+  transition: background-color 0.15s ease, transform 0.2s var(--spring);
+}
+
+.chip-alt:hover {
+  background: var(--press);
+}
+
+.chip-alt:active {
+  transform: scale(0.95);
+}
+
+.chip-edit {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  color: var(--muted);
+  transition: background-color 0.15s ease;
+}
+
+.chip-edit:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.chip-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.chip-form input {
+  flex: 1;
+  min-width: 180px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 9px;
+  border: 0.5px solid var(--border);
+  background: var(--hover);
+  font-family: ui-monospace, "SF Mono", Consolas, monospace;
+  font-size: 13px;
+}
+
+.chip-form .pill-btn {
+  height: 28px;
+}
+
+/* ---------- Answer style controls (Work window) ---------- */
+
+.style-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.seg {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--hover);
+}
+
+.seg button {
+  height: 24px;
+  padding: 0 11px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.seg button.on {
+  background: var(--panel-solid);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+}
+
+.toggle-chip {
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 9px;
+  background: var(--hover);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.toggle-chip.on {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+}
+
+/* ---------- Side-by-side columns ---------- */
+
+.tnote.cols {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.tcol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35em;
+  padding: 0 0.9em;
+  border-left: 0.07em solid currentColor;
+}
+
+.tcol:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.tcol:last-child {
+  padding-right: 0;
+}
+
+.thead {
+  margin-bottom: 0.1em;
+  padding-bottom: 0.15em;
+  font-size: 0.7em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 0.75;
+}
+
+.wcols {
+  display: flex;
+  align-items: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.wcol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 12px;
+  border-left: 1px solid var(--border);
+  min-width: 0;
+}
+
+.wcol:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.whead {
+  padding-bottom: 4px;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.wline {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* ---------- Read-as controls inside the Work window ---------- */
+
+.chip.docked {
+  position: static;
+  z-index: auto;
+  flex-wrap: wrap;
+  max-width: none;
+  padding: 0;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  animation: none;
+}
+
+.chip.docked .chip-label {
+  flex-basis: 100%;
+}
+
+.chip.docked .chip-read {
+  flex: 1 1 auto;
+}
+
+.chip.docked .chip-form {
+  flex-basis: 100%;
+}
+
+.chip.docked .chip-form input {
+  min-width: 0;
+}
+
+/* ---------- Work window: columns stacked, so nothing overlaps in a narrow panel ---------- */
+
+.wcols {
+  flex-direction: column;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.wcol {
+  padding: 8px 0 0;
+  border-left: none;
+  border-top: 0.5px solid var(--border);
+}
+
+.wcol:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.whead {
+  border-bottom: none;
+  padding-bottom: 2px;
+}

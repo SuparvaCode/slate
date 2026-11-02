@@ -1,0 +1,36 @@
+Slate
+Copyright (C) 2026 The Slate Authors
+
+This program is free software: you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the Free Software Foundation, version 3 only.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Affero General Public License for more details.
+
+The full licence text is in LICENSE. If this program is run as a network service, section 13 of
+the licence requires you to offer all users interacting with it the corresponding source code of
+the version you run.
+
+---------------------------------------------------------------------------
+
+Trademarks
+
+The Slate name and logo are claimed as trademarks by the project maintainers. The code licence
+does not grant permission to use them as the name or branding of a modified version or a competing
+service. See TRADEMARK.md.
+
+---------------------------------------------------------------------------
+
+Third-party components
+
+This repository does not vendor third-party source code. Dependencies are declared in
+services/server/package.json, apps/web/package.json and apps/desktop/package.json, pinned in the
+corresponding lockfiles, and remain under their own licences. Generated bundles therefore include
+third-party code under those licences; review the dependency licences before distributing a build.
+
+The application loads web fonts from the host configured in the app's stylesheets. If you self-host
+fonts, comply with the font licences you redistribute.
+
+No production Firebase configuration, service-account credentials, signing keys, customer data or
+deployment scripts are included in this distribution.

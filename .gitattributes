@@ -1,0 +1,19 @@
+# Normalise text to LF in the repository so Windows and Unix checkouts agree.
+* text=auto eol=lf
+
+# Shell and Gradle wrappers must keep LF to run.
+*.sh text eol=lf
+gradlew text eol=lf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.jar binary
+*.exe binary
+*.zip binary
+*.woff binary
+*.woff2 binary
+*.ttf binary

@@ -1,0 +1,46 @@
+{
+  "name": "slate-desktop",
+  "productName": "Slate",
+  "version": "0.1.0",
+  "description": "Slate desktop shell",
+  "author": "Slate contributors",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "org.slate.desktop",
+    "productName": "Slate",
+    "copyright": "Slate contributors",
+    "files": [
+      "main.js",
+      "preload.js",
+      "signin.js",
+      "offline.html",
+      "icon.png"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Slate",
+      "artifactName": "Slate-Setup-${version}.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0"
+  }
+}

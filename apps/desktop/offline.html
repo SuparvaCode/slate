@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Slate</title>
+    <style>
+      html, body { height: 100%; margin: 0; background: #1c1c1e; color: #f5f5f7; font: 16px/1.5 system-ui, sans-serif; }
+      main { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center; }
+      img { width: 72px; height: 72px; }
+      p { margin: 0; color: #a1a1a6; max-width: 300px; }
+      button { margin-top: 8px; padding: 10px 22px; border: 0; border-radius: 999px; background: #0a84ff; color: #fff; font: inherit; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <!-- Drawn inline: this page shows when the site can't be reached, so it can't load files from it. -->
+      <svg viewBox="0 0 512 512" width="72" height="72" aria-hidden="true">
+        <rect width="512" height="512" rx="112" fill="#2c2c2e" />
+        <path d="M 336 166 C 300 128 196 132 188 196 C 180 262 330 250 326 320 C 322 392 210 398 172 352" fill="none" stroke="#f5f5f7" stroke-width="46" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M 160 424 L 352 424" stroke="#0a84ff" stroke-width="30" stroke-linecap="round" />
+      </svg>
+      <h1 style="margin: 0; font-size: 22px">You're offline</h1>
+      <p>Slate needs the internet to read and solve your writing. Connect and try again.</p>
+      <button onclick="tryAgain()">Try again</button>
+    </main>
+    <script>
+      // The app passes its own site address when it loads this page.
+      function tryAgain() {
+        const url = new URLSearchParams(location.search).get('url');
+        if (url) location.href = url;
+      }
+    </script>
+  </body>
+</html>

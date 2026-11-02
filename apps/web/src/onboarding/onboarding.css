@@ -1,0 +1,430 @@
+/* ---------- Onboarding / sign-in ---------- */
+
+.ob {
+  --ob-stone: #121821;
+  --ob-chalk: #eef2f6;
+  --ob-mist: #9aa7b4;
+  --ob-answer: #6cb4ff;
+  --ob-lasso: #a9b8ff;
+  --ob-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--ob-stone);
+  color: var(--ob-chalk);
+  color-scheme: dark;
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Soft light behind everything. Gradients without filters, moved by transform only. */
+.ob-fields {
+  position: fixed;
+  inset: -12%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.ob-field {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.ob-f1 {
+  width: 70vmax;
+  height: 70vmax;
+  left: -8%;
+  top: -18%;
+  background: radial-gradient(closest-side, rgba(59, 79, 154, 0.55), rgba(59, 79, 154, 0) 100%);
+  animation: ob-drift-a 26s ease-in-out infinite alternate;
+}
+
+.ob-f2 {
+  width: 60vmax;
+  height: 60vmax;
+  right: -14%;
+  bottom: -20%;
+  background: radial-gradient(closest-side, rgba(42, 143, 138, 0.36), rgba(42, 143, 138, 0) 100%);
+  animation: ob-drift-b 32s ease-in-out infinite alternate;
+}
+
+.ob-f3 {
+  width: 46vmax;
+  height: 46vmax;
+  left: 38%;
+  top: 30%;
+  background: radial-gradient(closest-side, rgba(108, 180, 255, 0.16), rgba(108, 180, 255, 0) 100%);
+  animation: ob-drift-a 38s ease-in-out -12s infinite alternate-reverse;
+}
+
+@keyframes ob-drift-a {
+  to {
+    transform: translate3d(6%, 8%, 0) scale(1.08);
+  }
+}
+
+@keyframes ob-drift-b {
+  to {
+    transform: translate3d(-7%, -5%, 0) scale(1.12);
+  }
+}
+
+.ob-shell {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding:
+    max(20px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+}
+
+.ob-head {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  flex: none;
+}
+
+.ob-mark {
+  color: var(--ob-chalk);
+  opacity: 0.92;
+}
+
+.ob-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 80px);
+  padding: 24px 0 8px;
+}
+
+/* ---------- copy ---------- */
+
+.ob-copy {
+  max-width: 31rem;
+  will-change: transform;
+}
+
+.ob-title {
+  margin: 0;
+  font-size: clamp(2.5rem, 2.4vw + 1.6rem, 4.25rem);
+  font-weight: 650;
+  line-height: 1.02;
+  letter-spacing: -0.038em;
+}
+
+.ob-line {
+  display: block;
+}
+
+.ob-sub {
+  margin: 22px 0 0;
+  max-width: 28rem;
+  font-size: clamp(1rem, 0.3vw + 0.92rem, 1.125rem);
+  line-height: 1.55;
+  color: var(--ob-mist);
+  animation: ob-rise 0.9s var(--ob-ease) 0.35s both;
+}
+
+.ob-cta {
+  margin-top: 32px;
+  animation: ob-rise 0.9s var(--ob-ease) 0.5s both;
+}
+
+.ob-error {
+  margin: 14px 0 0;
+  max-width: 26rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: #ffb4a8;
+}
+
+.ob-legal {
+  margin: 18px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: rgba(154, 167, 180, 0.8);
+  animation: ob-rise 0.9s var(--ob-ease) 0.6s both;
+}
+
+.ob-legal a,
+.ob-legal .ob-link {
+  color: var(--ob-chalk);
+  text-decoration: underline;
+  text-decoration-color: rgba(238, 242, 246, 0.35);
+  text-underline-offset: 3px;
+}
+
+/* The legal text opens in a dialog, so these are buttons that read like links. */
+.ob-legal .ob-link {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  line-height: inherit;
+  color: var(--ob-chalk);
+  cursor: pointer;
+}
+
+.ob-legal a:hover,
+.ob-legal .ob-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.ob a:focus-visible,
+.ob .ob-link:focus-visible {
+  outline: 2px solid var(--ob-answer);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@keyframes ob-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+}
+
+/* ---------- Google button (light theme, pill) ---------- */
+
+.gsi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 0 22px 0 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #747775;
+  color: #1f1f1f;
+  font-family: Roboto, var(--font);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  transition:
+    transform 0.25s var(--ob-ease),
+    box-shadow 0.25s var(--ob-ease),
+    background-color 0.2s ease;
+}
+
+.gsi-btn:hover:not(:disabled) {
+  background: #f8faff;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
+  transform: translate3d(0, -1px, 0);
+}
+
+.gsi-btn:active:not(:disabled) {
+  transform: scale(0.98);
+  background: #eef1f6;
+}
+
+.gsi-btn:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.gsi-btn:focus-visible {
+  outline: 3px solid var(--ob-answer);
+  outline-offset: 3px;
+}
+
+.gsi-icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+}
+
+/* ---------- hero stage ---------- */
+
+.ob-stage {
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.ob-stage-in {
+  animation: ob-stage-in 1.2s var(--ob-ease) 0.1s both;
+}
+
+@keyframes ob-stage-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0) scale(0.97);
+  }
+}
+
+.ob-card {
+  position: relative;
+  aspect-ratio: 360 / 236;
+  width: 100%;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(238, 242, 246, 0.13) 1px, transparent 1.4px) 0 0 / 22px 22px,
+    linear-gradient(160deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.025));
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow:
+    0 40px 90px -30px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
+  overflow: hidden;
+}
+
+.ob-board {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ob-ink {
+  stroke: var(--ob-chalk);
+}
+
+.ob-answer {
+  stroke: var(--ob-answer);
+}
+
+.ob-lasso {
+  stroke: var(--ob-lasso);
+  stroke-opacity: 0.85;
+}
+
+.ob-glow {
+  opacity: 0.6;
+}
+
+.ob-chip {
+  position: absolute;
+  right: 5%;
+  bottom: 7%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px 7px 9px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ob-chalk);
+  background: rgba(30, 40, 54, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+.ob-chip svg {
+  color: #7fe0b4;
+}
+
+/* ---------- reduced motion: the finished frame, nothing moving ---------- */
+
+.ob-still .ob-field,
+.ob-still .ob-sub,
+.ob-still .ob-cta,
+.ob-still .ob-legal,
+.ob-still .ob-stage-in {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ob *,
+  .ob *::before,
+  .ob *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- tablets and phones ---------- */
+
+@media (max-width: 900px) {
+  .ob-main {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: 36px;
+    padding-top: 12px;
+  }
+  .ob-stage {
+    order: -1;
+    width: min(100%, 560px);
+    justify-self: center;
+  }
+  .ob-copy {
+    justify-self: center;
+    max-width: 34rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .ob-shell {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+  .ob-main {
+    gap: 28px;
+  }
+  .ob-card {
+    border-radius: 24px;
+  }
+  .ob-title {
+    font-size: clamp(2.15rem, 9vw, 2.6rem);
+  }
+  .ob-sub {
+    margin-top: 16px;
+  }
+  .ob-cta {
+    margin-top: 26px;
+  }
+  .gsi-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .ob-chip {
+    font-size: 0.72rem;
+  }
+}
+
+/* Phones held sideways: side by side again, with less height to spend. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .ob-head {
+    height: 32px;
+  }
+  .ob-main {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+    padding: 8px 0 0;
+  }
+  .ob-stage {
+    order: 0;
+    width: 100%;
+  }
+  .ob-title {
+    font-size: clamp(1.7rem, 3.4vw, 2.3rem);
+  }
+  .ob-sub {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+  .ob-cta {
+    margin-top: 16px;
+  }
+  .ob-legal {
+    margin-top: 10px;
+  }
+  .gsi-btn {
+    width: auto;
+  }
+}

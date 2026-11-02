@@ -1,0 +1,107 @@
+rules_version = '2';
+
+// Slate. Clients may only read their own profile and change a few fields of it.
+// Server code (Admin SDK) bypasses these rules, so `usage/**`, `limits`, `blocked` and `role`
+// are written by the server only. This open-source edition has no billing documents; the
+// catch-all rule below keeps any `/billing/**` path closed.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function optString(data, key, max) {
+      return !(key in data) || (data[key] is string && data[key].size() <= max);
+    }
+
+    // The settings map: known keys only, each with the right type.
+    function validSettings(s) {
+      return s is map
+        && s.size() <= 12
+        && s.keys().hasOnly(['theme', 'haptics', 'analytics', 'solution', 'fingers', 'updatedAt'])
+        && (!('theme' in s) || s.theme in ['light', 'dark'])
+        && (!('haptics' in s) || s.haptics is bool)
+        && (!('analytics' in s) || s.analytics is bool)
+        && (!('solution' in s) || s.solution is bool)
+        && (!('fingers' in s) || s.fingers in ['draw', 'pan'])
+        && (!('updatedAt' in s) || (s.updatedAt is int && s.updatedAt >= 0));
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+
+      // First sign-in: profile fields, timestamps and settings only.
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(
+             ['displayName', 'email', 'photoURL', 'createdAt', 'lastLoginAt', 'settings'])
+        && optString(request.resource.data, 'displayName', 200)
+        && optString(request.resource.data, 'email', 320)
+        && optString(request.resource.data, 'photoURL', 2048)
+        && (!('email' in request.resource.data) || request.resource.data.email == request.auth.token.email)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.lastLoginAt == request.time
+        && (!('settings' in request.resource.data) || validSettings(request.resource.data.settings));
+
+      // Later: only settings, displayName and lastLoginAt may change.
+      // limits, blocked and role can never be written by the client.
+      allow update: if isOwner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['settings', 'displayName', 'lastLoginAt'])
+        && optString(request.resource.data, 'displayName', 200)
+        && (!('lastLoginAt' in request.resource.data.diff(resource.data).affectedKeys())
+             || request.resource.data.lastLoginAt == request.time)
+        && (!('settings' in request.resource.data) || validSettings(request.resource.data.settings));
+
+      allow delete: if false;
+
+      // The user's boards (see apps/web/src/sync/cloud.ts). Only the owner reads or writes them.
+      // store/slates: the slate list; store/extra: small per-user data.
+      match /store/{doc} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && doc in ['slates', 'extra']
+          && (request.resource == null || request.resource.data.keys().size() <= 20);
+        allow delete: if isOwner(uid);
+      }
+      // A board's head (version and number of parts) and its parts.
+      match /boards/{board} {
+        allow read: if isOwner(uid);
+        allow delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && request.resource.data.keys().hasOnly(['key', 'v', 'n', 'at'])
+          && request.resource.data.key is string && request.resource.data.key.size() <= 120
+          && request.resource.data.v is string && request.resource.data.v.size() <= 40
+          && request.resource.data.n is int && request.resource.data.n >= 1 && request.resource.data.n <= 400
+          && request.resource.data.at is int;
+        match /parts/{part} {
+          allow read: if isOwner(uid);
+          allow delete: if isOwner(uid);
+          allow create, update: if isOwner(uid)
+            && request.resource.data.keys().hasOnly(['d'])
+            && request.resource.data.d is string;
+        }
+      }
+    }
+
+    // Which device holds the account (one device per account). Written by the server only; the
+    // owner reads it so an idle device learns at once that it was signed in elsewhere.
+    match /devices/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    // Usage counters are kept by the server only.
+    match /usage/{document=**} {
+      allow read, write: if false;
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

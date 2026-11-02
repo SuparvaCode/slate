@@ -1,0 +1,20 @@
+# Everything the image does not need. The Dockerfile copies only services/server and apps/web.
+.git
+.gitignore
+.github
+node_modules
+**/node_modules
+**/dist
+**/build
+apps/web/android
+apps/desktop
+docs
+*.md
+.env
+.env.*
+*.jks
+*.keystore
+google-services.json
+release.properties
+Dockerfile
+.dockerignore

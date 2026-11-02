@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Slate's hand-drawn S (public/favicon.svg) as a vector, so the Android 12+ splash stays sharp. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <group android:pivotX="256" android:pivotY="276" android:scaleX="0.62" android:scaleY="0.62" android:translateY="-20">
+        <path
+            android:pathData="M 336 166 C 300 128 196 132 188 196 C 180 262 330 250 326 320 C 322 392 210 398 172 352"
+            android:strokeColor="#F5F5F7"
+            android:strokeWidth="46"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M 160 424 L 352 424"
+            android:strokeColor="#0A84FF"
+            android:strokeWidth="30"
+            android:strokeLineCap="round" />
+    </group>
+</vector>

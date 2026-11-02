@@ -1,0 +1,642 @@
+/* ---------- Settings: sheet on phones, centred panel on larger screens ---------- */
+
+.st-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  place-items: center;
+  padding:
+    max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: rgba(0, 0, 0, 0.32);
+  animation: st-fade 0.24s ease both;
+}
+
+.st-scrim.closing {
+  animation: st-fade-out 0.2s ease both;
+}
+
+.st-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(460px, 100%);
+  max-height: min(720px, calc(100dvh - 48px));
+  background: var(--panel-solid);
+  color: var(--text);
+  border: 0.5px solid var(--border);
+  border-radius: 22px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  animation: st-pop 0.34s var(--spring) both;
+}
+
+.st-scrim.closing .st-panel {
+  animation: st-pop-out 0.2s ease-in both;
+}
+
+@keyframes st-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes st-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes st-pop {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.96);
+  }
+}
+
+@keyframes st-pop-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(0.98);
+  }
+}
+
+.st-grabber {
+  display: none;
+}
+
+.st-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 8px 22px;
+  flex: none;
+}
+
+.st-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.st-close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--hover);
+  color: var(--muted);
+  transition: background-color 0.15s ease;
+}
+
+.st-close:hover {
+  background: var(--press);
+  color: var(--text);
+}
+
+.st-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 22px 18px;
+}
+
+.st-section {
+  padding: 16px 0;
+  border-top: 0.5px solid var(--border);
+}
+
+.st-section:first-child {
+  border-top: 0;
+  padding-top: 6px;
+}
+
+.st-section h3 {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.st-account {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.st-avatar {
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--hover);
+}
+
+.st-initial {
+  width: var(--avatar, 36px);
+  height: var(--avatar, 36px);
+  font-size: calc(var(--avatar, 36px) * 0.42);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(140deg, #5e7ce2, #2a8f8a);
+}
+
+.st-who {
+  flex: 1;
+  min-width: 0;
+}
+
+.st-name {
+  font-size: 1rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-email {
+  font-size: 0.85rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+  min-height: 44px;
+}
+
+.st-row-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.st-row-title {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.st-row-hint {
+  margin-top: 2px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.st-row-control {
+  flex: none;
+}
+
+/* Switch */
+.st-switch {
+  position: relative;
+  width: 46px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--press);
+  transition: background-color 0.22s ease;
+}
+
+.st-switch i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+  transition: transform 0.28s var(--spring);
+}
+
+.st-switch.on {
+  background: #34c759;
+}
+
+[data-theme='dark'] .st-switch.on {
+  background: #30d158;
+}
+
+.st-switch.on i {
+  transform: translateX(18px);
+}
+
+/* Segmented control */
+.st-seg {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--hover);
+}
+
+.st-seg button {
+  min-width: 64px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 7px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.st-seg button.on {
+  background: var(--panel-solid);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+}
+
+/* Four choices need the whole width; the row stacks so the words stay readable. */
+.st-row-stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.st-row-stacked .st-row-control {
+  width: 100%;
+}
+
+.st-seg-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+}
+
+.st-seg-grid button {
+  min-width: 0;
+  padding: 0 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 400px) {
+  .st-seg-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+[data-theme='dark'] .st-seg button.on {
+  background: #48484a;
+}
+
+/* Buttons */
+.st-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: var(--hover);
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.st-btn:hover:not(:disabled) {
+  background: var(--press);
+}
+
+.st-btn.danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.st-btn.danger:hover:not(:disabled) {
+  background: var(--danger);
+  filter: brightness(1.08);
+}
+
+.st-btn.danger-ghost {
+  color: var(--danger);
+}
+
+.st-confirm p {
+  margin: 4px 0 12px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.st-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Usage meters */
+.st-usage {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.st-meter {
+  padding: 7px 0;
+}
+
+.st-meter-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.st-meter-num {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.st-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--hover);
+  overflow: hidden;
+}
+
+.st-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transform-origin: left center;
+  transition: transform 0.6s var(--ease);
+}
+
+.st-bar.high i {
+  background: #ff9f0a;
+}
+
+.st-bar.full i {
+  background: var(--danger);
+}
+
+.st-muted {
+  margin: 4px 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.st-usage-foot {
+  margin-top: 6px;
+}
+
+.st-error {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.st-foot {
+  padding-top: 14px;
+  border-top: 0.5px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--faint);
+  text-align: center;
+}
+
+.st-panel button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Phones: a sheet from the bottom edge. */
+@media (max-width: 640px) {
+  .st-scrim {
+    place-items: end stretch;
+    padding: env(safe-area-inset-top) 0 0;
+  }
+  .st-panel {
+    width: 100%;
+    max-height: calc(100dvh - max(24px, env(safe-area-inset-top)) - 12px);
+    border-radius: 22px 22px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: st-sheet 0.42s var(--ease) both;
+  }
+  .st-scrim.closing .st-panel {
+    animation: st-sheet-out 0.22s ease-in both;
+  }
+  .st-grabber {
+    display: block;
+    width: 36px;
+    height: 5px;
+    margin: 8px auto 0;
+    border-radius: 999px;
+    background: var(--press);
+  }
+  .st-head {
+    padding-top: 8px;
+  }
+}
+
+@keyframes st-sheet {
+  from {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+@keyframes st-sheet-out {
+  to {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-scrim,
+  .st-scrim.closing,
+  .st-panel,
+  .st-scrim.closing .st-panel {
+    animation: none;
+  }
+  .st-switch i,
+  .st-bar i {
+    transition: none;
+  }
+}
+
+/* ---------- Account button on the board ---------- */
+
+.acct-btn {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 3px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 0.5px solid var(--border);
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  transition:
+    transform 0.25s var(--spring),
+    opacity 0.2s ease;
+  animation: st-fade 0.4s ease 0.3s both;
+}
+
+.acct-btn:hover {
+  transform: scale(1.06);
+}
+
+.acct-btn:active {
+  transform: scale(0.95);
+}
+
+.acct-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.acct-btn .st-avatar {
+  width: 36px;
+  height: 36px;
+}
+
+/* Phones and tablets: above the full-width dock, out of the way of panels that open there. */
+@media (max-width: 900px) {
+  .acct-btn {
+    right: max(8px, env(safe-area-inset-right));
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    width: 40px;
+    height: 40px;
+  }
+  .acct-btn .st-avatar {
+    --avatar: 32px;
+    width: 32px;
+    height: 32px;
+  }
+  body:has(.style-panel, .figures, .pg-panel, .sim-panel) .acct-btn {
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* On a phone's board the bottom belongs to the tools; Settings is in the More menu there. */
+  .acct-btn:not(.top) {
+    display: none;
+  }
+}
+
+/* On the dashboard the avatar sits in the header, level with the wordmark. */
+.acct-btn.top {
+  top: calc(max(14px, env(safe-area-inset-top)) - 7px);
+  bottom: auto;
+  opacity: 1;
+  pointer-events: auto;
+}
+@media (max-width: 900px) {
+  .acct-btn.top {
+    top: calc(max(14px, env(safe-area-inset-top)) - 5px);
+    bottom: auto;
+  }
+}
+
+/* ---------- Daily limit toast ---------- */
+
+.limit-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(96px + env(safe-area-inset-bottom));
+  z-index: 1050;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: max-content;
+  max-width: min(440px, calc(100vw - 24px));
+  padding: 12px 12px 12px 16px;
+  border-radius: 16px;
+  background: var(--panel-solid);
+  color: var(--text);
+  border: 0.5px solid var(--border);
+  box-shadow: var(--shadow);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  transform: translateX(-50%);
+  animation: lt-in 0.4s var(--spring) both;
+}
+
+.limit-toast strong {
+  display: block;
+  font-weight: 600;
+}
+
+.limit-toast button {
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--hover);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+@keyframes lt-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+}
+
+@media (max-width: 900px) {
+  .limit-toast {
+    bottom: calc(128px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-btn,
+  .limit-toast {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ---------- Splash while the saved session is restored ---------- */
+
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  background: #fbfbfd;
+  color: #1d1d1f;
+}
+
+.splash.dark {
+  background: #121821;
+  color: #eef2f6;
+}
+
+.splash svg {
+  animation: splash-breathe 1.6s ease-in-out 0.4s infinite alternate both;
+}
+
+@keyframes splash-breathe {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash svg {
+    animation: none;
+    opacity: 0.7;
+  }
+}

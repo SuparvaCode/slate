@@ -1,0 +1,799 @@
+/* ---------- Dashboard: boards as cards, plan and streak. Phone first. ---------- */
+
+.db {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-overflow-scrolling: touch;
+}
+
+.db-top {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: max(14px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 12px max(20px, env(safe-area-inset-left));
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(180%);
+  border-bottom: 0.5px solid var(--border);
+}
+.db-mark {
+  color: var(--text);
+  flex: none;
+}
+.db-top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Room for the account button, which sits at the right end of the header. */
+  min-width: 0;
+  margin-right: 52px;
+}
+
+.db-main {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 26px max(20px, env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+}
+
+.db-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.db-hero h1 {
+  margin: 0 0 4px;
+  font-size: clamp(24px, 4.6vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.db-muted {
+  margin: 0;
+  color: var(--muted);
+}
+
+.db-streak {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  padding: 10px 16px 10px 12px;
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  background: var(--panel-solid);
+}
+.db-streak div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.db-streak b {
+  font-size: 20px;
+  font-weight: 700;
+}
+.db-streak span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.db-notice {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--text);
+}
+
+.db-tools {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.db-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 14px;
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel-solid);
+  color: var(--muted);
+}
+.db-search:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  outline-offset: 1px;
+}
+.db-search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: none;
+  outline: none;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.db-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel-solid);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.15s var(--ease), background-color 0.15s ease, opacity 0.15s ease;
+}
+.db-btn:hover:not(:disabled) {
+  background: var(--hover);
+}
+.db-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.db-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.db-btn.primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: #fff;
+}
+.db-btn.primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 88%, #000);
+}
+.db-btn.danger {
+  border-color: transparent;
+  background: var(--danger);
+  color: #fff;
+}
+.db-btn:focus-visible,
+.db-card-open:focus-visible,
+.db-card-more:focus-visible,
+.db-new:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* On phones the top bar has the New card, so the toolbar button would repeat it. */
+@media (max-width: 560px) {
+  .db-tools .db-btn {
+    display: none;
+  }
+}
+
+.db-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 16px;
+}
+@media (max-width: 420px) {
+  .db-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
+
+.db-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 0.5px solid var(--border);
+  border-radius: 18px;
+  background: var(--panel-solid);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s ease;
+  animation: db-in 0.32s var(--ease) both;
+}
+.db-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.db-card-open {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.db-thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  margin: 6px 6px 0;
+  border-radius: 13px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--text) 9%, transparent) 1px, transparent 1.2px) 0 0 / 14px 14px,
+    var(--bg);
+}
+.db-thumb canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.db-thumb-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--faint);
+  font-size: 12px;
+}
+.db-card-meta {
+  padding: 10px 44px 12px 14px;
+  min-width: 0;
+}
+.db-card-meta h3 {
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.db-card-meta p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.db-badge {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #34c759 18%, transparent);
+  color: color-mix(in srgb, #34c759 70%, var(--text));
+  font-weight: 600;
+}
+.db-card-more {
+  position: absolute;
+  right: 6px;
+  bottom: 8px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.db-card-more:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.db-menu {
+  position: absolute;
+  right: 8px;
+  bottom: 48px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  padding: 5px;
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel-solid);
+  box-shadow: var(--shadow);
+  animation: db-pop 0.18s var(--spring) both;
+}
+.db-menu button {
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.db-menu button:hover {
+  background: var(--hover);
+}
+.db-menu .danger {
+  color: var(--danger);
+}
+
+.db-new {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 180px;
+  border-style: dashed;
+  border-width: 1.5px;
+  background: none;
+  box-shadow: none;
+  color: var(--muted);
+  font-weight: 600;
+  cursor: pointer;
+}
+.db-new:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.db-new-plus {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-size: 26px;
+  line-height: 1;
+}
+.db-new kbd {
+  padding: 1px 6px;
+  border: 0.5px solid var(--border);
+  border-radius: 5px;
+  font: 11px var(--font);
+  color: var(--faint);
+}
+@media (hover: none) {
+  .db-new kbd {
+    display: none;
+  }
+}
+
+.db-empty {
+  margin: 30px 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ---------- dialogs and the plans sheet ---------- */
+
+.db-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: rgba(0, 0, 0, 0.36);
+  animation: db-fade 0.2s ease both;
+}
+.db-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(400px, 100%);
+  padding: 22px;
+  border-radius: 20px;
+  background: var(--panel-solid);
+  color: var(--text);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+  animation: db-pop 0.28s var(--spring) both;
+}
+.db-dialog h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.db-dialog input {
+  height: 44px;
+  padding: 0 14px;
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 15px;
+  outline: none;
+}
+.db-dialog input:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.db-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.db-plans {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(920px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--panel-solid);
+  color: var(--text);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+  animation: db-pop 0.3s var(--spring) both;
+}
+.db-plans-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.db-plans-head h2 {
+  margin: 0 0 2px;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+}
+.db-icon-btn {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--hover);
+  cursor: pointer;
+}
+.db-alert,
+.db-success,
+.db-note {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+.db-alert {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--text);
+}
+.db-success {
+  background: color-mix(in srgb, #34c759 16%, transparent);
+}
+.db-note {
+  background: var(--hover);
+  color: var(--muted);
+}
+.db-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 14px;
+}
+.db-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  border: 0.5px solid var(--border);
+  border-radius: 18px;
+  background: var(--bg);
+}
+.db-plan.featured {
+  border: 1.5px solid var(--accent);
+}
+.db-plan.current {
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, #34c759 70%, transparent);
+}
+.db-plan-tag {
+  position: absolute;
+  top: -10px;
+  right: 16px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.db-plan h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.db-price {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.db-price small {
+  margin-left: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.db-plan ul {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+  margin: 6px 0 10px;
+  padding: 0;
+  list-style: none;
+}
+.db-plan li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13.5px;
+}
+.db-plan li svg {
+  flex: none;
+  margin-top: 3px;
+  color: #34c759;
+}
+.db-plan-foot {
+  margin: 0;
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--hover);
+  color: var(--muted);
+  font-size: 13px;
+}
+.db-skel {
+  min-height: 320px;
+  background: linear-gradient(100deg, var(--hover) 30%, var(--press) 50%, var(--hover) 70%) 0 0 / 300% 100%;
+  animation: db-shimmer 1.3s linear infinite;
+}
+.db-plans-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 0.5px solid var(--border);
+}
+.db-plans-foot p {
+  margin: 0;
+}
+.db-link {
+  border: 0;
+  background: none;
+  color: var(--danger);
+  font-weight: 600;
+  cursor: pointer;
+}
+.db-fine {
+  margin: 0;
+  font-size: 12px;
+  color: var(--faint);
+}
+.db-spin {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: db-turn 0.7s linear infinite;
+}
+
+@media (max-width: 560px) {
+  .db-scrim:has(.db-plans) {
+    place-items: end stretch;
+    padding: 0;
+  }
+  .db-plans {
+    width: 100%;
+    max-height: 92dvh;
+    padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+    border-radius: 24px 24px 0 0;
+    animation: db-up 0.32s var(--ease) both;
+  }
+  .db-hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@keyframes db-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes db-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes db-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes db-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes db-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes db-shimmer {
+  to {
+    background-position: -300% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .db *,
+  .db-scrim,
+  .db-scrim * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- "All boards" button on a board: just above the account button ---------- */
+
+.home-btn {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(max(18px, env(safe-area-inset-bottom)) + 54px);
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0.5px solid var(--border);
+  border-radius: 50%;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  cursor: pointer;
+  transition: transform 0.2s var(--spring), opacity 0.2s ease;
+}
+.home-btn:hover {
+  transform: scale(1.06);
+}
+.home-btn:active {
+  transform: scale(0.95);
+}
+.home-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+@media (max-width: 900px) {
+  .home-btn {
+    right: max(8px, env(safe-area-inset-right));
+    bottom: calc(120px + env(safe-area-inset-bottom));
+    width: 40px;
+    height: 40px;
+  }
+  body:has(.style-panel, .figures, .pg-panel, .sim-panel) .home-btn {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* ---------- Sort and pins ---------- */
+
+.db-sort {
+  flex: none;
+  height: 42px;
+  padding: 0 34px 0 14px;
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel-solid)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 12px center;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.db-sort:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  outline-offset: 1px;
+}
+.db-pin {
+  width: 13px;
+  height: 13px;
+  margin-right: 5px;
+  vertical-align: -1px;
+  color: var(--accent);
+}
+
+/* Settings: the Upgrade button in Plan & usage. */
+.st-btn.st-btn-accent {
+  background: var(--accent);
+  color: #fff;
+}
+.st-btn.st-btn-accent:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 88%, #000);
+}
+
+/* ---------- share link dialog ---------- */
+
+.db-shared {
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: 2px;
+}
+.db-share .db-muted {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.db-share .db-small {
+  font-size: 12px;
+}
+.db-share-link {
+  display: flex;
+  gap: 8px;
+}
+.db-share-link input {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, "SF Mono", Consolas, monospace;
+  font-size: 13px;
+}
+.db-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.db-seg {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 3px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+}
+.db-seg button {
+  height: 34px;
+  border-radius: 9px;
+  color: var(--text);
+  font-size: 13px;
+}
+.db-seg button.on {
+  background: var(--panel-solid);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  font-weight: 600;
+}
+.db-error {
+  margin: 0;
+  color: #ff3b30;
+  font-size: 13px;
+}
+
+/* Join a room */
+.db-dialog input.db-code {
+  font: 600 22px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.3em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.db-error {
+  margin: 10px 0 0;
+  color: #ff453a;
+  font-size: 14px;
+}

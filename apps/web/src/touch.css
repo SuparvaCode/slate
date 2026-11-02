@@ -1,0 +1,652 @@
+/*
+ * Touch, stylus and small-screen layer. Loaded after the other sheets (imported from App.tsx),
+ * so equal-specificity rules here win.
+ */
+
+:root {
+  /* Motion: one spring-like curve, three durations. Only transform and opacity animate. */
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-1: 180ms;
+  --dur-2: 260ms;
+  --dur-3: 420ms;
+  --press-scale: 0.94;
+  /* Safe areas (notch, home indicator, rounded corners). */
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --edge: 16px;
+  --tap: 40px;
+}
+
+/* ---------- The page itself: no rubber-band, no pull-to-refresh, no double-tap zoom ---------- */
+
+html,
+body {
+  overscroll-behavior: none;
+  height: 100%;
+  height: 100dvh;
+}
+
+.app {
+  height: 100dvh;
+}
+
+/* ---------- No native text selection; Copy comes from the long-press / right-click menu ---------- */
+
+*,
+*::before,
+*::after {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Real text fields stay fully usable. */
+input,
+textarea,
+select,
+[contenteditable='true'],
+[contenteditable=''] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* These used to allow selection; the Copy menu replaces it. */
+.work-body,
+.details,
+.tnote,
+.ai-note {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Buttons respond on the first tap: no 300 ms double-tap-zoom wait. */
+button,
+[role='button'],
+a,
+label,
+.panel,
+.menu,
+.work,
+.pg-panel,
+.chip {
+  touch-action: manipulation;
+}
+
+/* Dragging the Work window by its title must not be taken over by the browser as a scroll. */
+.work-title {
+  touch-action: none;
+}
+
+/* The board alone takes every gesture; the panels above it scroll on their own. */
+.board {
+  touch-action: none;
+}
+
+.work-body,
+.pg-scroll,
+.sim-scroll,
+.menu,
+.figures {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---------- Press feedback ---------- */
+
+.tool,
+.solve,
+.switch-btn,
+.swatch,
+.size,
+.zoom-pct,
+.pill-btn,
+.menu-item,
+.chip-alt,
+.chip-edit,
+.pg-next,
+.fig {
+  transition:
+    background-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease),
+    opacity var(--dur-1) var(--ease),
+    transform var(--dur-2) var(--ease);
+}
+
+/* box-shadow is not animated: it repaints every frame. */
+.solve {
+  transition: transform var(--dur-2) var(--ease), filter var(--dur-1) var(--ease);
+}
+
+.work {
+  transition: height var(--dur-2) var(--ease);
+}
+
+.fig-search {
+  transition: none;
+}
+
+.tool:active:not(:disabled),
+.solve:active,
+.switch-btn:active,
+.size:active,
+.zoom-pct:active,
+.pill-btn:active:not(:disabled),
+.chip-alt:active,
+.pg-next:active,
+.fig:active {
+  transform: scale(var(--press-scale));
+  transition-duration: 90ms;
+}
+
+.swatch:active {
+  transform: scale(0.88);
+  transition-duration: 90ms;
+}
+
+/* Held down for a long press: shrink slowly, so the hold itself is visible. */
+[data-pressing] {
+  transform: scale(var(--press-scale));
+  transition: transform 450ms var(--ease) !important;
+}
+
+/* Text that a long press is about to copy. */
+[data-copy-target],
+.work-body .steps li,
+.work-body .wline,
+.work-body .answer-tex,
+.work-body .read-tex,
+.work-body .note,
+.chip-read,
+.pg-title {
+  transition: transform var(--dur-2) var(--ease), opacity var(--dur-1) var(--ease);
+  transform-origin: left center;
+}
+
+[data-copy-active] {
+  opacity: 0.6;
+}
+
+/* Hover states stick after a tap on touch screens; only real hovers get them. */
+@media (hover: none) {
+  .tool:hover:not(:disabled):not(.active):not(.on),
+  .size:hover:not(.on),
+  .zoom-pct:hover,
+  .switch-btn:hover,
+  .menu-item:hover:not(:disabled):not(:focus-visible) {
+    background: transparent;
+  }
+  .swatch:hover {
+    transform: none;
+  }
+  .menu-item:hover:not(:disabled):not(:focus-visible) {
+    color: inherit;
+  }
+  .menu-item:active:not(:disabled) {
+    background: var(--hover);
+  }
+}
+
+/* ---------- Sheets and panels: one slide-up motion ---------- */
+
+@keyframes sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes fade-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+.menu {
+  animation: fade-scale var(--dur-1) var(--ease) both;
+}
+
+/* ---------- Copy toast ---------- */
+
+.copy-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(96px + var(--sab));
+  z-index: 120;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(30, 30, 32, 0.92);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: copy-toast 1.4s var(--ease) both;
+}
+
+[data-theme='dark'] .copy-toast {
+  background: rgba(245, 245, 247, 0.95);
+  color: #1d1d1f;
+}
+
+.copy-toast.err {
+  background: var(--danger);
+  color: #fff;
+}
+
+@keyframes copy-toast {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.96);
+  }
+  14%,
+  80% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.98);
+  }
+}
+
+/* ---------- While two fingers move the board, overlays tied to the board fade out ---------- */
+
+.selbar,
+.chip:not(.docked) {
+  transition: opacity var(--dur-1) var(--ease);
+}
+
+.app[data-gesture] .selbar,
+.app[data-gesture] .chip:not(.docked) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- Safe areas everywhere ---------- */
+
+.history {
+  top: calc(var(--edge) + var(--sat));
+  left: calc(var(--edge) + var(--sal));
+}
+
+.topright {
+  top: calc(var(--edge) + var(--sat));
+  right: calc(var(--edge) + var(--sar));
+}
+
+.status {
+  top: calc(var(--edge) + var(--sat));
+}
+
+.zoom {
+  bottom: calc(18px + var(--sab));
+  left: calc(var(--edge) + var(--sal));
+}
+
+.dock {
+  bottom: calc(18px + var(--sab));
+}
+
+.style-panel {
+  bottom: calc(86px + var(--sab));
+}
+
+.toast {
+  top: calc(66px + var(--sat));
+  max-width: calc(100vw - 24px - var(--sal) - var(--sar));
+}
+
+.pg-panel,
+.cls-menu {
+  top: calc(64px + var(--sat));
+  right: calc(var(--edge) + var(--sar));
+}
+
+.sim-panel {
+  top: calc(64px + var(--sat));
+  left: calc(var(--edge) + var(--sal));
+  bottom: calc(96px + var(--sab));
+}
+
+.figures {
+  bottom: calc(144px + var(--sab));
+  max-height: min(58dvh, 460px);
+}
+
+.studio {
+  padding-top: var(--sat);
+  padding-bottom: var(--sab);
+}
+
+/* ---------- Touch screens: 44 px targets, 16 px inputs (no iOS focus zoom) ---------- */
+
+@media (pointer: coarse) {
+  :root {
+    --tap: 44px;
+  }
+  input,
+  textarea,
+  select,
+  .text-editor ~ input {
+    font-size: max(16px, 1em);
+  }
+  .tool,
+  .tool.small {
+    width: 44px;
+    height: 44px;
+  }
+  .swatch {
+    width: 44px;
+    height: 44px;
+  }
+  .swatch::before {
+    width: 22px;
+    height: 22px;
+  }
+  .size {
+    width: 44px;
+    height: 44px;
+  }
+  .zoom-pct {
+    height: 44px;
+    min-width: 56px;
+  }
+  .solve,
+  .switch-btn {
+    height: 44px;
+  }
+  .pill-btn {
+    min-height: 44px;
+  }
+  .menu-item {
+    height: 44px;
+    font-size: 15px;
+  }
+  .menu {
+    min-width: 240px;
+  }
+  .menu-colors .swatch {
+    width: 36px;
+    height: 36px;
+  }
+  .seg button {
+    min-height: 40px;
+  }
+  .selbar .tool {
+    width: 44px;
+    height: 44px;
+  }
+  .chip-alt,
+  .chip-edit,
+  .pg-next,
+  .pg-link {
+    min-height: 40px;
+  }
+  /* The window lights are tiny dots; give them a finger-sized hit area. */
+  .light {
+    position: relative;
+  }
+  .light::before {
+    content: '';
+    position: absolute;
+    inset: -10px -4px;
+  }
+  .work-title {
+    height: 48px;
+  }
+}
+
+/* ---------- Tablets and phones ---------- */
+
+@media (max-width: 900px) {
+  .dock {
+    left: calc(8px + var(--sal));
+    right: calc(8px + var(--sar));
+    bottom: calc(8px + var(--sab));
+  }
+  .style-panel {
+    bottom: calc(72px + var(--sab));
+    width: auto;
+    left: calc(6px + var(--sal));
+    right: calc(6px + var(--sar));
+    transform: none;
+    animation-name: sheet-up;
+  }
+  .figures {
+    bottom: calc(72px + var(--sab));
+  }
+  .sim-panel {
+    bottom: calc(72px + var(--sab));
+    animation: sheet-up var(--dur-3) var(--ease) both;
+  }
+  .figures {
+    max-height: min(62dvh, calc(100dvh - 160px - var(--sat) - var(--sab)));
+  }
+  .sim-panel {
+    top: auto;
+    left: calc(8px + var(--sal));
+    right: calc(8px + var(--sar));
+    max-height: min(58dvh, calc(100dvh - 150px - var(--sat) - var(--sab)));
+  }
+  .pg-panel {
+    top: auto;
+    left: calc(12px + var(--sal));
+    right: calc(12px + var(--sar));
+    bottom: calc(80px + var(--sab));
+    max-height: min(70dvh, 520px);
+    animation: sheet-up var(--dur-3) var(--ease) both;
+  }
+  .zoom {
+    top: calc(var(--edge) + var(--tap) + 20px + var(--sat));
+    bottom: auto;
+  }
+  .toast {
+    top: calc(136px + var(--sat));
+  }
+  .copy-toast {
+    bottom: calc(84px + var(--sab));
+  }
+}
+
+@media (max-width: 900px) and (pointer: coarse) {
+  .style-panel {
+    bottom: calc(76px + var(--sab));
+  }
+  .figures,
+  .sim-panel,
+  .pg-panel {
+    bottom: calc(78px + var(--sab));
+  }
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 720px) {
+  :root {
+    --edge: 8px;
+  }
+  .zoom {
+    top: calc(var(--edge) + var(--tap) + 20px + var(--sat));
+  }
+  .toast {
+    top: calc(var(--edge) + 2 * var(--tap) + 44px + var(--sat));
+  }
+  /*
+   * Undo/redo on the left and the tools on the right used to overlap here. The right-hand bar
+   * now starts after undo/redo and scrolls sideways when it does not fit.
+   */
+  /* The less used buttons are in the More menu here, so the bar fits beside undo and redo. */
+  .topright {
+    animation-name: panel-in;
+  }
+  .topright > * {
+    flex: none;
+  }
+  .topright .sep {
+    margin: 0 3px;
+  }
+  /* The tooltips would be clipped by the scrolling bar, and fingers cannot hover anyway. */
+  .topright [data-tip]::after {
+    display: none;
+  }
+  .pg-panel {
+    left: calc(8px + var(--sal));
+    right: calc(8px + var(--sar));
+  }
+  .cls-menu {
+    right: calc(8px + var(--sar));
+    max-width: calc(100vw - 16px - var(--sal) - var(--sar));
+    max-height: calc(100dvh - 160px - var(--sat) - var(--sab));
+    overflow-y: auto;
+  }
+}
+
+/* The Work window becomes a bottom sheet on phones. */
+@media (max-width: 600px) {
+  .work {
+    left: calc(8px + var(--sal)) !important;
+    right: calc(8px + var(--sar));
+    width: auto !important;
+    top: auto !important;
+    bottom: calc(72px + var(--sab));
+    border-radius: 18px;
+    animation: sheet-up var(--dur-3) var(--ease) both;
+  }
+  .work:not(.collapsed) {
+    height: min(62dvh, calc(100dvh - 150px - var(--sat) - var(--sab))) !important;
+  }
+  .work-title {
+    cursor: default;
+  }
+}
+
+@media (max-width: 600px) and (pointer: coarse) {
+  .work {
+    bottom: calc(78px + var(--sab));
+  }
+}
+
+/* ---------- Landscape phones: very little height ---------- */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  :root {
+    --edge: 8px;
+  }
+  .zoom {
+    top: calc(8px + var(--sat));
+    bottom: auto;
+    left: calc(var(--edge) + var(--sal) + 2 * var(--tap) + 24px);
+  }
+  .status {
+    display: none;
+  }
+  .toast {
+    top: calc(64px + var(--sat));
+  }
+  .figures,
+  .sim-panel,
+  .pg-panel {
+    max-height: calc(100dvh - 90px - var(--sat) - var(--sab));
+  }
+  .pg-panel {
+    top: calc(8px + var(--sat));
+    bottom: calc(72px + var(--sab));
+  }
+  .work:not(.collapsed) {
+    max-height: calc(100dvh - 24px - var(--sat) - var(--sab));
+  }
+  .menu {
+    max-height: calc(100dvh - 16px - var(--sat) - var(--sab));
+  }
+}
+
+/* ---------- Reduced motion: no scaling or sliding, quick fades only ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-pressing],
+  .tool:active:not(:disabled),
+  .solve:active,
+  .switch-btn:active,
+  .size:active,
+  .zoom-pct:active,
+  .swatch:active,
+  .pill-btn:active:not(:disabled),
+  .fig:active {
+    transform: none !important;
+  }
+  .copy-toast {
+    animation: none;
+  }
+}
+
+/* ---------- Copy button on answer cards ---------- */
+
+.card-copy {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--accent);
+  background: transparent;
+  transition: background-color var(--dur-1) var(--ease), transform var(--dur-2) var(--ease);
+}
+
+.card-copy:hover {
+  background: var(--hover);
+}
+
+.card-copy:active {
+  transform: scale(var(--press-scale));
+  transition-duration: 90ms;
+}
+
+.sec-head .card-copy + * {
+  margin-left: 0;
+}
+
+@media (pointer: coarse) {
+  .card-copy {
+    height: 36px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+}
+
+/* Phones: the colours share one row (finger-tall, as wide as the row allows), the sizes sit below. */
+@media (max-width: 720px) {
+  .style-panel {
+    padding: 4px 6px;
+  }
+  .style-panel .swatches {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0;
+  }
+  .style-panel .swatch {
+    flex: 1 1 0;
+    min-width: 30px;
+    max-width: 44px;
+  }
+}
+
+/* Small laptops and landscape tablets: the centred dock reaches the bottom-left corner, so the
+   zoom controls move up under undo and redo, as they do on narrower screens. */
+@media (min-width: 901px) and (max-width: 1200px) {
+  .zoom {
+    top: calc(var(--edge) + var(--tap) + 20px + var(--sat));
+    bottom: auto;
+  }
+}
