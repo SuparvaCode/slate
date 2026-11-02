@@ -65,6 +65,12 @@ function bearer(req: Request): string | null {
   return m ? m[1] : null;
 }
 
+/** Firebase ID tokens are JWTs: three base64url segments. Reject anything else before calling the SDK. */
+function looksLikeJwt(token: string): boolean {
+  const parts = token.split('.');
+  return parts.length === 3 && parts.every((p) => p.length > 0 && /^[A-Za-z0-9_-]+$/.test(p));
+}
+
 export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   if (authDisabled()) {
     res.locals.caller = { uid: DEV_UID } satisfies Caller;
@@ -72,7 +78,9 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   }
   const token = bearer(req);
   if (!token) return next(new HttpError(401, 'Sign in to use Slate AI.'));
-  if (token.length > 4096) return next(new HttpError(401, 'Your sign-in token is not valid. Sign in again.'));
+  if (token.length > 4096 || !looksLikeJwt(token)) {
+    return next(new HttpError(401, 'Your sign-in token is not valid. Sign in again.'));
+  }
   try {
     const decoded = await getAuth(firebaseApp()).verifyIdToken(token, true);
     if (PROJECT_ID && decoded.aud !== PROJECT_ID) throw Object.assign(new Error('aud'), { code: 'auth/invalid-audience' });
