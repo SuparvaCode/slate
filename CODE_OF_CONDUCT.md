@@ -50,9 +50,8 @@ as an appointed representative at an online or offline event.
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behaviour may be reported to the
-community leaders responsible for enforcement at **conduct@example.com** — replace this with a
-contact address the maintainers actually monitor before publishing the repository.
+Instances of abusive, harassing, or otherwise unacceptable behaviour may be reported privately to
+the community leaders responsible for enforcement at **suparva@outlook.in**.
 
 All complaints will be reviewed and investigated promptly and fairly. Community leaders are
 obligated to respect the privacy and security of the reporter of any incident.

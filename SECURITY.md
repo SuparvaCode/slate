@@ -15,9 +15,7 @@ for tracking `main` and redeploying.
 **Do not open a public issue, discussion, or pull request for a vulnerability.**
 
 Report it privately through GitHub's **Security → Advisories → Report a vulnerability** on the
-repository. If advisories are unavailable, contact the maintainers at the address published in
-`SECURITY` on the repository profile; replace this paragraph with a monitored address before
-publishing.
+repository. If advisories are unavailable, email the maintainers at **suparva@outlook.in**.
 
 Please include:
 

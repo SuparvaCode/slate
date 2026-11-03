@@ -5,8 +5,8 @@ handwriting, solves or explains the problem with a tool loop (a language model p
 calculator and computer-algebra engine), and writes the working back in your own handwriting.
 
 <p align="center">
-  <img src="docs/assets/slate-intro.gif" width="880"
-       alt="Motion graphic: the handwritten equation 2x + 3 = 11 is read, solved, and the answer x = 4 is written in blue ink">
+  <img src="docs/assets/slate-hero.gif" width="800"
+       alt="Animation: the equation 2x + 5 = 13 is written by hand on the board and circled, x = 4 is written in blue ink, and a chip confirms it was checked with a calculator">
 </p>
 
 This repository is the **open-source edition** of Slate. It is the same web app, API server, Android
