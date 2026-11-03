@@ -66,4 +66,4 @@ The first open-source edition, derived from the production application.
 - There is no upgrade path from the commercial product's data model beyond the boards, profile and
   shares that this edition already reads; billing documents are ignored and denied.
 
-[0.1.0]: https://github.com/OWNER/REPO/releases/tag/v0.1.0
+[0.1.0]: https://github.com/SuparvaCode/slate/releases/tag/v0.1.0
