@@ -42,7 +42,17 @@ export const int = (name: string, fallback: number): number => {
 };
 
 export const isProduction = (): boolean => process.env.NODE_ENV === 'production';
-export const isMock = (): boolean => process.env.SLATE_MOCK === '1';
+let mockWarned = false;
+/** SLATE_MOCK=1 is a development switch, like SLATE_AUTH_DISABLED: a production server ignores it. */
+export const isMock = (): boolean => {
+  if (process.env.SLATE_MOCK !== '1') return false;
+  if (!isProduction()) return true;
+  if (!mockWarned) {
+    mockWarned = true;
+    console.error('[mock] SLATE_MOCK=1 is IGNORED because NODE_ENV=production. Answers come from the real model.');
+  }
+  return false;
+};
 export const provider = (): string => env('SLATE_PROVIDER', 'groq');
 
 export const samplesDir = (): string => resolve(ROOT, env('SLATE_SAMPLES_DIR', 'data/samples'));

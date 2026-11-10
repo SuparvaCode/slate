@@ -9,7 +9,8 @@ import { env } from './env.ts';
 import { ClientGone } from './errors.ts';
 import { errName } from './groq.ts';
 
-const BASE = 'https://api.experientiallabs.ai/v1';
+/** Any OpenAI-compatible gateway works; this is only the default. */
+const BASE = env('EXPLABS_BASE_URL', 'https://api.experientiallabs.ai/v1').replace(/\/+$/, '');
 const CHAT_TIMEOUT_MS = 90_000;
 /** Jev answers in under a second; past this it is down, and the notes go on without it. */
 const JEV_TIMEOUT_MS = 10_000;

@@ -1,4 +1,10 @@
-/** Saved crops and results (data/samples), for building an eval set. Each record has an owner uid. */
+/**
+ * Saved crops and results (data/samples), for building an eval set. Each record has an owner uid.
+ *
+ * Off unless SLATE_SAVE_SAMPLES=1: this writes a picture of a student's handwriting to the
+ * operator's disk for every recognition and every solve, so it is opt-in and must be disclosed in
+ * the deployment's privacy policy when it is turned on.
+ */
 import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -22,7 +28,7 @@ export function decodePng(image: string): [string, Buffer] {
   return [b64, raw];
 }
 
-export const saveEnabled = (): boolean => (process.env.SLATE_SAVE_SAMPLES ?? '1') === '1';
+export const saveEnabled = (): boolean => (process.env.SLATE_SAVE_SAMPLES ?? '0') === '1';
 
 export async function saveSample(raw: Buffer, record: Record<string, unknown>, owner: string): Promise<[string, boolean]> {
   const id = randomUUID().replace(/-/g, '').slice(0, 12);

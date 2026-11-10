@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/SuparvaCode/slate/security/advisories/new
+    about: Report privately. Never open a public issue with exploit details — see SECURITY.md.
+  - name: Setup, configuration and self-hosting
+    url: https://github.com/SuparvaCode/slate/blob/main/docs/DEVELOPMENT.md
+    about: Read the development and deployment guides before opening an issue.
+  - name: Questions and ideas
+    url: https://github.com/SuparvaCode/slate/discussions
+    about: Ask a question or propose a change in Discussions rather than in an issue.

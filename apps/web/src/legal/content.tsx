@@ -17,7 +17,7 @@ import type { ReactNode } from 'react';
 export type LegalDoc = 'terms' | 'privacy';
 
 /** Shown as "Last updated" on both documents. */
-export const LEGAL_UPDATED = '3 November 2026';
+export const LEGAL_UPDATED = '10 November 2026';
 
 /** Replace before publishing your own deployment. */
 export const LEGAL_CONTACT = 'privacy@example.com';
@@ -244,6 +244,13 @@ function Privacy() {
             to the AI provider configured by the operator.
           </li>
           <li>
+            <strong>Recognition records, only when the operator turns them on</strong> — with
+            SLATE_SAVE_SAMPLES=1 the operator’s own server keeps the board picture sent for
+            recognition and the text Slate read from it, so accuracy can be measured and improved.
+            This is off by default, is not sent to a third party and is not used to train a model.
+            [State whether this deployment has it on.]
+          </li>
+          <li>
             <strong>Device and usage records</strong> — a random device identifier used for the
             one-active-device rule, daily AI usage counters, and routine server logs (such as time,
             route and error) used for security and reliability.
@@ -260,7 +267,9 @@ function Privacy() {
         <p>
           We do not ask for your phone number, contacts, precise location or payment details in this
           edition. We do not sell personal data. We do not use your boards to train AI models.
-          [Confirm this for your own deployment and providers before publishing.]
+          Recognition records, when the operator enables them, are kept on the operator’s own server
+          to measure accuracy — never sold and never used for model training. [Confirm this for your
+          own deployment and providers before publishing.]
         </p>
       </Section>
 
@@ -314,10 +323,12 @@ function Privacy() {
       <Section title="5. How long we keep it">
         <p>
           Boards and account data are kept while your account exists. Usage counters and routine
-          logs are kept only as long as needed for limits, security and debugging. When you delete a
-          board or your account, it is removed from the live system; copies in routine backups are
-          removed or overwritten in the ordinary course. Some records may be kept longer where the
-          law requires. [State concrete retention periods for your deployment.]
+          logs are kept only as long as needed for limits, security and debugging. Recognition
+          records, when the operator has enabled them, are kept on that server until the operator
+          deletes them; they are not part of your account and deleting a board does not remove them.
+          When you delete a board or your account, it is removed from the live system; copies in
+          routine backups are removed or overwritten in the ordinary course. Some records may be kept
+          longer where the law requires. [State concrete retention periods for your deployment.]
         </p>
       </Section>
 

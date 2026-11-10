@@ -60,7 +60,8 @@ per-feature caps and AI token budget, configurable by the operator. They are not
 feature and never return HTTP 402. The seam for building an edition with different entitlements is
 [`services/server/src/entitlements.ts`](services/server/src/entitlements.ts).
 
-The Slate **name and logo** are not licensed with the code; see [TRADEMARK.md](TRADEMARK.md).
+The Slate **name and logo** ship with the app but are **not** licensed to you by the AGPL grant; see
+[TRADEMARK.md](TRADEMARK.md).
 
 ## Repository layout
 
@@ -85,8 +86,8 @@ There is no Python service and no admin client in this tree.
   - Realtime Database (for collaboration rooms);
   - optionally Analytics;
   - a service account key for the Admin SDK (the server verifies ID tokens and writes counters).
-- An **AI provider**: Groq (default) and/or Anthropic. Only the provider(s) you configure are
-  called.
+- An **AI provider**: Groq (default) and/or Anthropic, or any OpenAI-compatible gateway you point
+  `EXPLABS_BASE_URL` at. Only the provider(s) you configure are called.
 - For the Android build: Android Studio / the Android SDK, and your own `google-services.json`.
 - For the desktop build: Windows, or Electron's cross-platform packaging.
 
@@ -169,7 +170,7 @@ There is no Python service and no admin client in this tree.
 └────────────┘                                     └──────────┬───────────┘
        │                                                    │
        ▼                                                    ▼
- Firebase Auth / Firestore / RTDB                 Groq and/or Anthropic API
+ Firebase Auth / Firestore / RTDB                 Groq, Anthropic, or your gateway
 ```
 
 - The browser talks to Firebase directly for auth, board sync and collaboration.
@@ -191,6 +192,9 @@ More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - AI requests send the relevant part of the board to the operator's chosen AI provider. **Operators
   must disclose and govern that in their own privacy policy** — the shipped policy is a DRAFT
   template.
+- Recognition records (a picture of the student's writing plus what was read from it) are **not**
+  kept by default. `SLATE_SAVE_SAMPLES=1` turns that on for measuring accuracy; an operator who
+  enables it must disclose the retention, because the files are personal data.
 - The open-source edition ships **no** production Firebase project, signing keys, service-account
   JSON, release signing configuration, customer data or deployment scripts.
 

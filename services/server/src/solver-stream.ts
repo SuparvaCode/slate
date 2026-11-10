@@ -77,7 +77,8 @@ async function* attempt(key: string, body: object, waited: number[], signal?: Ab
     }
     if (opts.explabs && r.status !== 200) {
       const text = await r.text().catch(() => '');
-      console.error(`[solve] backup model error ${r.status}:`, text.slice(0, 200));
+      // Length only: an error body echoes the request, which carries the student's working.
+      console.error(`[solve] backup model error ${r.status} (${text.length} chars)`);
       if (r.status >= 500) explabsDown();
       throw r.status === 429 ? new Limited(30) : new SolveError('The AI service had a problem. Please try again.');
     }

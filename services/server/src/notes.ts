@@ -71,7 +71,8 @@ function parseJson(choice: any): Record<string, unknown> | null {
   } catch {
     // fall through
   }
-  console.error(`[notes] malformed JSON: finish=${choice?.finish_reason} chars=${text.length} end=${JSON.stringify(text.slice(-80))}`);
+  // The model's own text is not logged: it can quote a heading or a formula from the student's notes.
+  console.error(`[notes] malformed JSON: finish=${choice?.finish_reason} chars=${text.length}`);
   return null;
 }
 

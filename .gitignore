@@ -29,6 +29,10 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 
+# Runtime data written by the server (saved handwriting samples: see SLATE_SAVE_SAMPLES).
+# Never commit this: the files are pictures of real students' handwriting.
+services/server/data/
+
 # Android
 apps/web/android/.gradle/
 apps/web/android/local.properties

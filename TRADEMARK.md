@@ -42,13 +42,19 @@ You may keep "based on Slate" as a factual attribution in your README and about 
 
 ## This repository
 
-The open-source edition uses neutral icons and contains no production branding assets. The name is
-kept so the project is recognizable; the absence of the official logo in a build does not grant any
-right to the name.
+This repository ships the Slate app icon set — `apps/web/public/`, `apps/web/assets/` and the
+launcher and splash images under `apps/web/android/app/src/main/res/` — because a build without an
+icon looks broken. Those files **are** the Slate mark.
+
+They are nonetheless **not granted to you by the code licence**. LICENSE covers the software under
+AGPL-3.0; the mark in those files stays the maintainers' trademark, the same way the project name
+does. Running the unmodified code under the Slate name is allowed (see above). Distributing or hosting
+a modified version with a Slate icon is not: replace every file listed above with your own mark before
+you build.
 
 ## Reporting misuse
 
 Report confusing use of the marks to the maintainers through the repository. This policy does not
 limit any rights the maintainers have under trademark or unfair-competition law.
 
-_Last updated: 3 November 2026._
+_Last updated: 10 November 2026._

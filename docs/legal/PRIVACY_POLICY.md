@@ -6,7 +6,7 @@
 > Bracketed text marks what must be filled in. The same text is shown in the app
 > (`apps/web/src/legal/content.tsx`); keep both in step.
 
-**Last updated:** 3 November 2026
+**Last updated:** 10 November 2026
 
 This Privacy Policy explains what this Slate deployment collects, why, and the choices you have.
 **[OPERATOR NAME], [OPERATOR ADDRESS]** is the controller of the personal data described here.
@@ -25,6 +25,10 @@ hosted.
 - **AI requests** — the part of a board you ask Slate to read, solve, explain, diagram or turn into
   notes, together with the instructions sent with it. These are sent to the AI provider configured
   by the operator.
+- **Recognition records, only when the operator turns them on** — with `SLATE_SAVE_SAMPLES=1` the
+  operator's own server keeps the board picture sent for recognition and the text Slate read from it,
+  so recognition accuracy can be measured and improved. This is **off by default**; it is not sent to
+  a third party and it is not used to train a model. **[State whether this deployment has it on.]**
 - **Device and usage records** — a random device identifier used for the one-active-device rule,
   daily AI usage counters, and routine server logs (such as time, route and error) used for
   security and reliability.
@@ -34,8 +38,10 @@ hosted.
 ## 2. What we do not collect
 
 We do not ask for your phone number, contacts, precise location or payment details in this edition.
-We do not sell personal data. We do not use your boards to train AI models. **[Confirm this for
-your own deployment and providers before publishing.]**
+We do not sell personal data. We do not use your boards to train AI models. Recognition records, when
+the operator enables them, are kept on the operator's own server to measure accuracy — never sold and
+never used for model training. **[Confirm this for your own deployment and providers before
+publishing.]**
 
 ## 3. Why we use it
 
@@ -61,7 +67,9 @@ your own deployment and providers before publishing.]**
 ## 5. How long we keep it
 
 Boards and account data are kept while your account exists. Usage counters and routine logs are
-kept only as long as needed for limits, security and debugging. When you delete a board or your
+kept only as long as needed for limits, security and debugging. Recognition records, when the
+operator has enabled them, are kept on that server until the operator deletes them; they are not part
+of your account and are not removed by deleting a board. When you delete a board or your
 account, it is removed from the live system; copies in routine backups are removed or overwritten
 in the ordinary course. Some records may be kept longer where the law requires. **[State concrete
 retention periods for your deployment.]**

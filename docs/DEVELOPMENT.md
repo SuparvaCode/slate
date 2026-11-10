@@ -7,7 +7,8 @@ How to run Slate locally, configure Firebase and AI providers, and work on each 
 - Node.js **22.18+** and npm 10+.
 - A Firebase project you control. The free Spark plan is enough for local development.
 - An AI provider key: [Groq](https://console.groq.com/) (the default) and/or
-  [Anthropic](https://console.anthropic.com/). You can run without either by setting
+  [Anthropic](https://console.anthropic.com/), or any OpenAI-compatible gateway (see
+  `EXPLABS_BASE_URL` below). You can run without any of them by setting
   `SLATE_MOCK=1`, which returns canned AI output — useful for UI work and tests.
 
 ## 1. Install
@@ -93,7 +94,15 @@ Copy `services/server/.env.example`. The full list, with defaults:
 | `FIREBASE_AUTH_DOMAIN` | — | Adds the Firebase auth domain to the CSP frame/connect lists |
 | `SLATE_PROVIDER` | `groq` | `groq` or `anthropic` |
 | `GROQ_API_KEYS` | — | One or more Groq keys, comma-separated (rotated) |
+| `GROQ_API_KEY` | — | A single Groq key; `GROQ_API_KEYS` is preferred |
 | `ANTHROPIC_API_KEY` | — | Anthropic key when the provider is `anthropic` |
+| `EXPLABS_API_KEY`, `EXPERIENTIAL_API_KEY` | — | Optional OpenAI-compatible gateway key (fallback provider and notes planner); unset uses Groq/Anthropic only |
+| `EXPLABS_BASE_URL` | `https://api.experientiallabs.ai/v1` | Root of that gateway; any OpenAI-compatible `/chat/completions` works |
+| `SLATE_RECOGNIZE_BACKUP`, `SLATE_SOLVE_BACKUP` | `claude-haiku-5.5` | Model that takes over when the primary is rate-limited; empty disables the hand-over |
+| `SLATE_NOTES_THINKERS` | `deepseek-v4.1-flash,claude-haiku-5.5` | Models for notes planning, tried in order |
+| `SLATE_JEV_MODEL` | `jev-latest` | Model that picks the right answer when checking a practice question |
+| `SLATE_FALLBACKS` | `1` | `0` never hands a request to the gateway |
+| `SLATE_NOTES_GUARD` | `1` | `0` keeps worked examples the calculator cannot confirm |
 | `SLATE_RECOGNIZE_MODEL`, `SLATE_SOLVE_MODEL`, `SLATE_DIAGRAM_MODEL`, `SLATE_NOTES_MODEL`, `SLATE_ASSIST_MODEL` | provider defaults | Per-tool model overrides |
 | `SLATE_RECOGNIZE_EFFORT`, `SLATE_NOTES_REASONING` | — | Reasoning-effort overrides |
 | `SLATE_ANTHROPIC_BASE_URL` | — | For a compatible gateway |
@@ -112,12 +121,25 @@ Copy `services/server/.env.example`. The full list, with defaults:
 | `SLATE_LIMIT_NOTES_DAY` | `120` | Daily notes calls |
 | `SLATE_LIMIT_SEARCH_DAY` | `400` | Daily search calls |
 | `SLATE_AI_TOKENS_DAY` | `1_400_000` | Daily AI token budget per account |
+| `SLATE_BURST_SOLVE_MIN`, `SLATE_BURST_DIAGRAM_MIN`, `SLATE_BURST_MOLECULE_MIN`, `SLATE_BURST_ASSIST_MIN`, `SLATE_BURST_NOTES_MIN`, `SLATE_BURST_SEARCH_MIN` | `10`, `6`, `30`, `10`, `20`, `40` | Per-account burst limits, requests per minute |
+| `SLATE_IP_PER_MIN` | `120` | Requests per minute per IP, checked before sign-in |
+| `SLATE_MAX_STREAMS` | `2` | Concurrent solve streams per account |
 | `SLATE_QUOTA_STORE` | `firestore`; `memory` in dev | Counter store; `memory` resets on restart |
+| `SLATE_SAVE_SAMPLES` | `0` | `1` keeps recognition crops and results on disk (see below) |
+| `SLATE_SAMPLES_DIR` | `data/samples` | Where those records go |
+| `SLATE_LOG_TOKENS` | `0` | `1` logs each counted AI call and its token count |
 | `SLATE_SEARCH_KEY`, `SLATE_SEARCH_WEB_URL`, `SLATE_SEARCH_IMAGE_URL` | — | Optional web and image search provider; search routes return 503 without them |
 | `TURN_URLS`, `TURN_SECRET`, `CF_TURN_KEY_ID`, `CF_TURN_API_TOKEN` | — | Optional TURN credentials for voice in rooms |
+| `TURN_TTL_S` | `14400` | Lifetime of a TURN credential, in seconds (600–86400) |
 
 Values are read on first use; real environment variables win over the `.env` file. `SLATE_ENV_FILE`
 can point at a different env file.
+
+**Recognition records.** `SLATE_SAVE_SAMPLES=1` writes every recognition crop and its result to
+`SLATE_SAMPLES_DIR` (default `services/server/data/samples`, which is gitignored), with the owner's
+uid in the record, so `GET /api/accuracy` and `POST /api/feedback` can measure recognition quality.
+It is **off by default** because the files are pictures of students' handwriting: turn it on
+deliberately, restrict access to the directory, and disclose the retention in your privacy policy.
 
 ## 4. Run
 

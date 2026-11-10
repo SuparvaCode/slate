@@ -6,7 +6,7 @@
 > Bracketed text marks what must be filled in. The same text is shown in the app
 > (`apps/web/src/legal/content.tsx`); keep both in step.
 
-**Last updated:** 3 November 2026
+**Last updated:** 10 November 2026
 
 These Terms of Service (the “Terms”) are an agreement between you and **[OPERATOR NAME]**,
 **[OPERATOR ADDRESS]** (“we”, “us” or “our”) for the use of this Slate deployment (the “Service”).

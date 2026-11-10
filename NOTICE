@@ -18,7 +18,8 @@ Trademarks
 
 The Slate name and logo are claimed as trademarks by the project maintainers. The code licence
 does not grant permission to use them as the name or branding of a modified version or a competing
-service. See TRADEMARK.md.
+service. The icon, splash and launcher files in this tree are part of that mark: they ship so that an
+unmodified build looks right, and a fork must replace them. See TRADEMARK.md.
 
 ---------------------------------------------------------------------------
 
