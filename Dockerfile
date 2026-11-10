@@ -1,6 +1,6 @@
 # Slate: the API and the built web app in one image.
 # The server serves apps/web/dist when NODE_ENV=production, so the app and API share an origin.
-FROM node:22-slim AS build
+FROM node:26-slim AS build
 WORKDIR /app
 
 COPY services/server/package.json services/server/package-lock.json services/server/
@@ -13,7 +13,7 @@ RUN npm ci --prefix apps/web
 COPY apps/web apps/web
 RUN npm run build --prefix apps/web
 
-FROM node:22-slim
+FROM node:26-slim
 ENV NODE_ENV=production
 WORKDIR /app
 
